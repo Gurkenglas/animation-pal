@@ -1,0 +1,94 @@
+name:                animation-pal
+version:             0.1.0.0
+synopsis:            Simple lens-based animations
+description:         Please see README.md
+homepage:            http://github.com/lukexi/animation-pal
+license:             BSD3
+license-file:        LICENSE
+author:              Luke Iannini
+maintainer:          lukexi@me.com
+copyright:           2015 Luke Iannini
+category:            Graphics
+build-type:          Simple
+-- extra-source-files:
+cabal-version:       >=1.10
+
+library
+  hs-source-dirs:      src
+  exposed-modules:     
+    Animation.Pal
+    Animation.Pal.Animation
+    Animation.Pal.Timer
+  build-depends:       
+      base
+    , time
+    , stm
+    , lens
+    , mtl
+    , linear
+  default-language:    Haskell2010
+  ghc-options:         -Wall -O2
+  ghc-prof-options:    -Wall -O2 -fprof-auto
+
+executable animation-pal-explosion
+  hs-source-dirs:      app
+  main-is:             MainExplosion.hs
+  other-modules: 
+    Types
+    Render
+    Random
+  ghc-options:         -Wall -O2 -threaded -with-rtsopts=-N
+  ghc-prof-options:    -Wall -O2 -fprof-auto -threaded -with-rtsopts=-N
+  build-depends:       base
+                     , animation-pal
+                     , containers
+                     , game-pal
+                     , glfw-pal
+                     , gl-pal
+                     , gl
+                     , halive
+                     , lens
+                     , linear
+                     , mtl
+                     , random
+                     , stm
+                     , time
+  default-language:    Haskell2010
+
+executable animation-pal-chain
+  hs-source-dirs:      app
+  main-is:             MainChain.hs
+  other-modules: 
+    Types
+    Render
+    Random
+  ghc-options:         -Wall -O2 -threaded -with-rtsopts=-N
+  ghc-prof-options:    -Wall -O2 -fprof-auto -threaded -with-rtsopts=-N
+  build-depends:       base
+                     , animation-pal
+                     , containers
+                     , game-pal
+                     , glfw-pal
+                     , gl-pal
+                     , gl
+                     , halive
+                     , lens
+                     , linear
+                     , mtl
+                     , random
+                     , stm
+                     , time
+  default-language:    Haskell2010
+
+test-suite animation-pal-test
+  type:                exitcode-stdio-1.0
+  hs-source-dirs:      test
+  main-is:             Spec.hs
+  build-depends:       base
+                     , animation-pal
+  ghc-options:         -threaded -rtsopts -with-rtsopts=-N
+  default-language:    Haskell2010
+
+source-repository head
+  type:     git
+  location: https://github.com/githubuser/animation-pal
