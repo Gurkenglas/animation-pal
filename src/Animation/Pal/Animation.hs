@@ -8,6 +8,7 @@ import Linear
 
 import Data.Time
 import Data.List
+import Control.Monad.Trans
 
 -- | The Interpolatable typeclass is just here to allow us to swap out
 -- lerp for slerp in the case of Quaternions
@@ -98,17 +99,19 @@ evalAnim now animation@Animation{..} = evaluated
 
 
 
-continueAnimation :: EvaluatedAnimation struct -> AnimationFunc struct -> struct -> (Animation struct)
-continueAnimation evaledAnim animationFunc toStruct = 
+continueAnimation :: EvaluatedAnimation struct -> struct -> (Animation struct)
+continueAnimation evaledAnim toStruct = 
   Animation
     { animStart    = animStart fromAnim + animDuration fromAnim
     , animDuration = 1
-    , animFunc = animationFunc
+    , animFunc = animFunc fromAnim
     , animFrom = evanResult evaledAnim
     , animTo = toStruct
     }
   where fromAnim = evanAnimation evaledAnim
 
+getNow :: MonadIO m => m DiffTime
+getNow = utctDayTime <$> liftIO getCurrentTime
 
 -------------------
 -- Easing functions

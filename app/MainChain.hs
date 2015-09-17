@@ -25,7 +25,6 @@ import Random
 
 spawnCube :: (MonadState World m, MonadIO m) => m ()
 spawnCube = do
-
   
   startTime <- utctDayTime <$> liftIO getCurrentTime
 
@@ -36,11 +35,11 @@ spawnCube = do
   let shapeAnim = Animation
         { animStart    = startTime
         , animDuration = 1
-        , animFunc = shapeStateAnim
-        , animFrom = newShapeState 
-                      & rndrColor .~ color
-                      & rndrPose . posOrientation .~ (axisAngle (V3 0 1 0) 0)
-        , animTo = toShapeState
+        , animFunc     = shapeStateAnim
+        , animFrom     = newShapeState 
+                            & rndrColor .~ color
+                            & rndrPose . posOrientation .~ (axisAngle (V3 0 1 0) 0)
+        , animTo       = toShapeState
         }
   wldAnimations <>= [shapeAnim]
 
@@ -80,7 +79,7 @@ main = do
     -- Whenever an animation finishes, create a new animation to continue it    
     newAnims <- forM finishedEvaledAnims $ \finishedAnim -> 
       -- Animate from the final state of the last animation to the new state
-      continueAnimation finishedAnim shapeStateAnim <$> liftIO randomShapeState
+      continueAnimation finishedAnim <$> liftIO randomShapeState
 
     wldAnimations .= runningAnims ++ newAnims
     
