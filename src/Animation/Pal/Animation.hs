@@ -19,12 +19,55 @@ class Fractional a => Interpolatable a where
 
 instance Interpolatable Double
 instance Interpolatable Float
-instance Fractional a => Interpolatable (V4 a)
-instance Fractional a => Interpolatable (V3 a)
 instance Fractional a => Interpolatable (V2 a)
+instance Fractional a => Interpolatable (V3 a)
+instance Fractional a => Interpolatable (V4 a)
 
 instance (RealFloat a) => Interpolatable (Quaternion a) where
   interp fromVal toVal p = slerp fromVal toVal (realToFrac p)
+
+-- | Make your own type Animatable by using chained applications of the anim function
+-- to each field, e.g.:
+-- > data Object = Object
+-- >   { _objPose  :: Pose
+-- >   , _objScale :: Float
+-- >   , _objColor :: V4 Float
+-- >   }
+-- > makeLenses ''Object
+-- > 
+-- > instance Animatable Object where
+-- >   animator =  anim (objPose . posPosition)
+-- >             . anim (objPose . posOrientation)
+-- >             . anim objScale
+-- >             . anim objColor
+class Animatable a where
+  animator :: a -> AnimationFunc a
+
+instance Animatable Double where
+  animator _a = anim id
+instance Animatable Float where
+  animator _a = anim id
+instance (Fractional a) => Animatable (V2 a) where
+  animator _a = anim id
+instance (Fractional a) => Animatable (V3 a) where
+  animator _a = anim id
+instance (Fractional a) => Animatable (V4 a) where
+  animator _a = anim id
+instance (RealFloat a) => Animatable (Quaternion a) where
+  animator _a = anim id
+
+makeAnimation :: (MonadIO m, Animatable struct) 
+              => DiffTime 
+              -> struct -> struct -> m (Animation struct)
+makeAnimation duration fromA toB = do
+  now <- getNow
+  return Animation 
+      { animFrom = fromA
+      , animTo   = toB
+      , animFunc = animator fromA
+      , animStart = now
+      , animDuration = duration
+      }
 
 -- | A composable animation func taking a "progress" time and a starting struct,
 -- and returning the same progress time along with the modified struct 
