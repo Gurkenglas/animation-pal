@@ -70,7 +70,7 @@ spawnCube = do
 
 main :: IO ()
 main = do
-  GamePal{..} <- reacquire 0 $ initGamePal "GamePal" []
+  gamePal@GamePal{..} <- reacquire 0 $ initGamePal "GamePal" NoGCPerFrame []
 
   -- Set up our cube resources
   cubeProg <- createShaderProgram "app/cube.vert" "app/cube.frag"
@@ -103,7 +103,7 @@ main = do
     wldAnimations .= newAnims
     
     viewMat <- viewMatrixFromPose <$> use wldPlayer
-    renderWith gpWindow gpHMD viewMat 
+    renderWith gamePal viewMat 
       (glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT))
       (render shape shapeStates)
 
