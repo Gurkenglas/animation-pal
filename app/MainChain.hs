@@ -10,9 +10,9 @@ import Game.Pal
 import Graphics.UI.GLFW.Pal
 import Graphics.GL.Pal
 import Graphics.GL
-import Linear
+import Linear.Extra
 import Control.Monad.State.Strict
-import Control.Lens
+import Control.Lens.Extra
 import Halive.Utils
 import Data.Time
 

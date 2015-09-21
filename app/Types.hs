@@ -4,20 +4,20 @@ module Types where
 import Data.Data
 import Graphics.GL.Pal
 import Graphics.GL
-import Linear
+import Linear.Extra
 import Game.Pal
-import Control.Lens
+import Control.Lens.Extra
 import Animation.Pal
 
 data World = World
-  { _wldPlayer      :: Pose
-  , _wldAnimations :: [Animation ShapeState]
+  { _wldPlayer     :: !(Pose GLfloat)
+  , _wldAnimations :: ![Animation ShapeState]
   }
 
 data ShapeState = ShapeState
-  { _rndrPose     :: Pose
-  , _rndrColor    :: V4 GLfloat
-  , _rndrScale    :: V3 GLfloat
+  { _rndrPose     :: !(Pose GLfloat)
+  , _rndrColor    :: !(V4 GLfloat)
+  , _rndrScale    :: !(V3 GLfloat)
   }
 makeLenses ''World
 makeLenses ''ShapeState

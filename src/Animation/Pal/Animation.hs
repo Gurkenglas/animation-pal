@@ -3,8 +3,8 @@
 {-# LANGUAGE RecordWildCards #-}
 module Animation.Pal.Animation where
 
-import Control.Lens
-import Linear
+import Control.Lens.Extra
+import Linear.Extra
 
 import Data.Time
 import Data.List

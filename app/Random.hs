@@ -2,7 +2,7 @@ module Random where
 import System.Random
 import Graphics.GL
 import Graphics.GL.Pal
-import Linear
+import Linear.Extra
 import Game.Pal
 import Control.Monad.Trans
 
@@ -17,7 +17,7 @@ randomShapeState = ShapeState
 randomRIO' :: (Random a, MonadIO m) => (a,a) -> m a
 randomRIO' = liftIO . randomRIO
 
-randomPose :: MonadIO m => m Pose
+randomPose :: MonadIO m => m (Pose GLfloat)
 randomPose = Pose 
   <$> randomPosition
   <*> randomOrientation

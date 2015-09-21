@@ -5,9 +5,9 @@ module Render where
 import Game.Pal
 import Graphics.GL.Pal
 import Graphics.GL
-import Linear
+import Linear.Extra
 import Control.Monad.State
-import Control.Lens
+import Control.Lens.Extra
 
 import Data.Maybe
 

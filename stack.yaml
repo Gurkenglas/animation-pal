@@ -7,6 +7,8 @@ packages:
 - '../halive'
 - '../hydra-hs'
 - '../oculus-mini'
+- '../linear-extra'
+- '../lens-extra'
 extra-deps:
 - GLFW-b-1.4.7.3
 - bindings-GLFW-3.1.1.4
