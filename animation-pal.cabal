@@ -30,7 +30,8 @@ library
   ghc-options:         -Wall -O2
   ghc-prof-options:    -Wall -O2 -fprof-auto
 
-executable animation-pal-explosion
+test-suite animation-pal-explosion
+  type:                exitcode-stdio-1.0
   hs-source-dirs:      app
   main-is:             MainExplosion.hs
   other-modules: 
@@ -55,7 +56,8 @@ executable animation-pal-explosion
                      , time
   default-language:    Haskell2010
 
-executable animation-pal-chain
+test-suite animation-pal-chain
+  type:                exitcode-stdio-1.0
   hs-source-dirs:      app
   main-is:             MainChain.hs
   other-modules: 
