@@ -6,11 +6,9 @@
 {-# LANGUAGE RankNTypes #-}
 module Main where
 
-import Game.Pal
+import Graphics.VR.Pal
 import Graphics.UI.GLFW.Pal
 import Graphics.GL.Pal
-import Graphics.GL
-import Linear.Extra
 import Control.Monad.State.Strict
 import Control.Lens.Extra
 
@@ -25,8 +23,6 @@ import Random
 
 import System.Random
 
-import Control.Concurrent
-import Control.Concurrent.STM
 
 data Moment = Moment
   { momPitch :: !Float
@@ -70,7 +66,7 @@ spawnCube = do
 
 main :: IO ()
 main = do
-  gamePal@GamePal{..} <- reacquire 0 $ initGamePal "GamePal" NoGCPerFrame []
+  gamePal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" NoGCPerFrame []
 
   -- Set up our cube resources
   cubeProg <- createShaderProgram "app/cube.vert" "app/cube.frag"

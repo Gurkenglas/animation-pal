@@ -1,11 +1,7 @@
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE DeriveDataTypeable #-}
 module Types where
-import Data.Data
 import Graphics.GL.Pal
-import Graphics.GL
-import Linear.Extra
-import Game.Pal
 import Control.Lens.Extra
 import Animation.Pal
 

@@ -1,9 +1,6 @@
 module Random where
 import System.Random
-import Graphics.GL
 import Graphics.GL.Pal
-import Linear.Extra
-import Game.Pal
 import Control.Monad.Trans
 
 import Types

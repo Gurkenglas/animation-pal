@@ -2,10 +2,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 module Render where
 
-import Game.Pal
 import Graphics.GL.Pal
-import Graphics.GL
-import Linear.Extra
 import Control.Monad.State
 import Control.Lens.Extra
 
@@ -35,10 +32,10 @@ render shape shapeStates projection viewMat = do
       let model = mkTransformation (r ^. rndrPose . posOrientation) (r ^. rndrPose . posPosition) 
                   !*! scaleMatrix (r ^. rndrScale)
 
-      drawShape model projectionView shape
+      drawShape' model projectionView shape
 
-drawShape :: MonadIO m => M44 GLfloat -> M44 GLfloat -> Shape Uniforms -> m ()
-drawShape model projectionView shape = do 
+drawShape' :: MonadIO m => M44 GLfloat -> M44 GLfloat -> Shape Uniforms -> m ()
+drawShape' model projectionView shape = do 
 
   let Uniforms{..} = sUniforms shape
 
@@ -47,5 +44,5 @@ drawShape model projectionView shape = do
 
   uniformM44 uModelViewProjection (projectionView !*! model)
 
-  let vc = vertCount (sGeometry shape)
+  let vc = geoVertCount (sGeometry shape)
   glDrawElements GL_TRIANGLES vc GL_UNSIGNED_INT nullPtr

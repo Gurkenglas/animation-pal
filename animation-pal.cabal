@@ -43,7 +43,7 @@ test-suite animation-pal-explosion
   build-depends:       base
                      , animation-pal
                      , containers
-                     , game-pal
+                     , vr-pal
                      , glfw-pal
                      , gl-pal
                      , gl
@@ -69,7 +69,7 @@ test-suite animation-pal-chain
   build-depends:       base
                      , animation-pal
                      , containers
-                     , game-pal
+                     , vr-pal
                      , glfw-pal
                      , gl-pal
                      , gl
