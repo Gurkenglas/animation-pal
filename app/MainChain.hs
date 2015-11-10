@@ -43,7 +43,7 @@ spawnCube = do
 
 main :: IO ()
 main = do
-  gamePal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" NoGCPerFrame []
+  vrPal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" NoGCPerFrame []
 
   -- Set up our cube resources
   cubeProg <- createShaderProgram "app/cube.vert" "app/cube.frag"
@@ -66,7 +66,7 @@ main = do
     processEvents gpEvents $ \e -> do
       closeOnEscape gpWindow e
       applyGamepadJoystickMovement e wldPlayer
-      onKeyDown Key'E e $ replicateM_ 100 spawnCube
+      onKeyDown e Key'E $ replicateM_ 100 spawnCube
     
     -- onSpawnTimer spawnCube
 
@@ -82,7 +82,7 @@ main = do
     wldAnimations .= runningAnims ++ newAnims
     
     viewMat <- viewMatrixFromPose <$> use wldPlayer
-    renderWith gamePal viewMat 
+    renderWith vrPal viewMat 
       (glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT))
       (render shape shapeStates)
 

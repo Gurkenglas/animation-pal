@@ -89,7 +89,7 @@ main = do
     processEvents gpEvents $ \e -> do
       closeOnEscape gpWindow e
       applyGamepadJoystickMovement e wldPlayer
-      onKeyDown Key'E e $ replicateM_ 100 spawnCube
+      onKeyDown e Key'E $ replicateM_ 100 spawnCube
     
     onSpawnTimer spawnCube
 
