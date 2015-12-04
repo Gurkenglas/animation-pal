@@ -66,7 +66,7 @@ spawnCube = do
 
 main :: IO ()
 main = do
-  gamePal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" NoGCPerFrame []
+  gamePal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" []
 
   -- Set up our cube resources
   cubeProg <- createShaderProgram "app/cube.vert" "app/cube.frag"
