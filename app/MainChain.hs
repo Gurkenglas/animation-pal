@@ -60,7 +60,7 @@ main = do
 
   -- onSpawnTimer <- makeTimer 0.001
 
-  void . flip runStateT world . whileWindow gpWindow $ do
+  void . flip runStateT world . whileVR vrPal $ \headM44 hands -> do
     -- applyMouseLook gpWindow wldPlayer
     applyWASD gpWindow wldPlayer
     processEvents gpEvents $ \e -> do
@@ -81,8 +81,8 @@ main = do
 
     wldAnimations .= runningAnims ++ newAnims
     
-    viewMat <- viewMatrixFromPose <$> use wldPlayer
-    renderWith vrPal viewMat 
+    player <- use wldPlayer
+    renderWith vrPal player headM44 
       (glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT))
       (render shape shapeStates)
 
