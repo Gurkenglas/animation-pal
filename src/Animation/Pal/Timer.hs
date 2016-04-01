@@ -15,11 +15,11 @@ makeTimer secs = do
     threadDelay (floor (secs * 1e6))
 
   let onTick action = 
-        liftIO (atomically (exhaustChan tickChan)) >>=
+        liftIO (atomically (exhaustTChan tickChan)) >>=
           mapM_ (const action)
   return onTick
 
-exhaustChan :: TChan a -> STM [a]
-exhaustChan chan = tryReadTChan chan >>= \case
-  Just a -> (a:) <$> exhaustChan chan
+exhaustTChan :: TChan a -> STM [a]
+exhaustTChan chan = tryReadTChan chan >>= \case
+  Just a -> (a:) <$> exhaustTChan chan
   Nothing -> return []
