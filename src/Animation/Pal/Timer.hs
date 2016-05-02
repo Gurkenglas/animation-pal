@@ -9,17 +9,17 @@ import Control.Concurrent
 
 makeTimer :: (MonadIO m) => Double -> IO (m () -> m ())
 makeTimer secs = do
-  tickChan <- newTChanIO
-  _ <- forkIO . forever $ do
-    atomically (writeTChan tickChan ())
-    threadDelay (floor (secs * 1e6))
-
-  let onTick action = 
-        liftIO (atomically (exhaustTChan tickChan)) >>=
-          mapM_ (const action)
-  return onTick
+    tickChan <- newTChanIO
+    _ <- forkIO . forever $ do
+        atomically (writeTChan tickChan ())
+        threadDelay (floor (secs * 1e6))
+  
+    let onTick action = 
+            liftIO (atomically (exhaustTChan tickChan)) >>=
+                mapM_ (const action)
+    return onTick
 
 exhaustTChan :: TChan a -> STM [a]
 exhaustTChan chan = tryReadTChan chan >>= \case
-  Just a -> (a:) <$> exhaustTChan chan
-  Nothing -> return []
+    Just a -> (a:) <$> exhaustTChan chan
+    Nothing -> return []
