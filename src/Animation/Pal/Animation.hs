@@ -34,7 +34,7 @@ instance (RealFloat a) => Interpolatable (Quaternion a) where
 -- >   , _objColor :: V4 Float
 -- >   }
 -- > makeLenses ''Object
--- > 
+-- >
 -- > instance Animatable Object where
 -- >   animator =  anim (objPose . posPosition)
 -- >             . anim (objPose . posOrientation)
@@ -56,12 +56,12 @@ instance (Fractional a) => Animatable (V4 a) where
 instance (RealFloat a) => Animatable (Quaternion a) where
   animator _a = anim id
 
-makeAnimation :: (MonadIO m, Animatable struct) 
-              => DiffTime 
+makeAnimation :: (MonadIO m, Animatable struct)
+              => DiffTime
               -> struct -> struct -> m (Animation struct)
 makeAnimation duration fromA toB = do
   now <- getNow
-  return Animation 
+  return Animation
       { animFrom = fromA
       , animTo   = toB
       , animFunc = animator fromA
@@ -69,8 +69,19 @@ makeAnimation duration fromA toB = do
       , animDuration = duration
       }
 
+redirectAnimation :: (MonadIO m, Animatable struct) => Animation struct -> struct -> m (Animation struct)
+redirectAnimation orig toNew = do
+  now <- getNow
+  let evaled = evalAnim now orig
+  return orig
+    { animFrom = evanResult evaled
+    , animTo = toNew
+    , animStart = now
+    , animDuration = animDuration orig - (now - animStart orig)
+    }
+
 -- | A composable animation func taking a "progress" time and a starting struct,
--- and returning the same progress time along with the modified struct 
+-- and returning the same progress time along with the modified struct
 -- to be passed to the next animation func.
 type AnimationFunc struct = (struct, struct, Double) -> (struct, struct, Double)
 
@@ -88,11 +99,11 @@ data EvaluatedAnimation struct = EvaluatedAnimation
   , evanAnimation :: !(Animation struct)
   }
 
--- | Constructs an animation from a lens. 
+-- | Constructs an animation from a lens.
 -- The animation will take a fromState, a toState and a progress value (0-1)
--- and will interpolate the target of the lens between from/to, 
+-- and will interpolate the target of the lens between from/to,
 -- storing the result into the fromState to be passed to the next animation, or returned.
--- 
+--
 -- Meant to be composed, like:
 -- > let myAnim =  anim (rndrPose . posPosition . _y)
 -- >             . anim (rndrPose . posOrientation)
@@ -100,7 +111,7 @@ data EvaluatedAnimation struct = EvaluatedAnimation
 -- to produce a composite animation of multiple properties simultaneously
 -- (you'd define this once for your struct, and then pass it to the Animation type)
 anim :: Interpolatable target
-     => Lens' struct target 
+     => Lens' struct target
      -> AnimationFunc struct
 anim targetLens (fromStruct, toStruct, progress) = (result, toStruct, progress)
   -- fromStruct is transformed by each composed anim into the final result
@@ -125,13 +136,13 @@ evalAnimations now animations = (results, map evanAnimation runningAnims, finish
     results = map evanResult evaledAnims
     (runningAnims, finishedAnims) = partition evanRunning evaledAnims
 
--- | Evaluates an animation at the given "now" time and returns 
+-- | Evaluates an animation at the given "now" time and returns
 -- the result along with whether the animation is over
-evalAnim :: DiffTime 
-         -> Animation struct 
+evalAnim :: DiffTime
+         -> Animation struct
          -> EvaluatedAnimation struct
 evalAnim now animation@Animation{..} = evaluated
-  where 
+  where
     progress  = realToFrac ((now - animStart) / animDuration)
     eased     = cubicInOut . min 1 $ progress
     evaluated = EvaluatedAnimation
@@ -143,7 +154,7 @@ evalAnim now animation@Animation{..} = evaluated
 
 
 continueAnimation :: EvaluatedAnimation struct -> struct -> (Animation struct)
-continueAnimation evaledAnim toStruct = 
+continueAnimation evaledAnim toStruct =
   Animation
     { animStart    = animStart fromAnim + animDuration fromAnim
     , animDuration = 1
