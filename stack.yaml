@@ -5,9 +5,7 @@ packages:
 - '../glfw-pal'
 - '../vr-pal'
 - '../halive'
-- '../hydra-hs'
-- '../oculus-mini'
 - '../linear-extra'
 - '../lens-extra'
 - '../openvr-hs'
-resolver: nightly-2015-12-03
+resolver: nightly-2016-05-25

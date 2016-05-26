@@ -15,11 +15,11 @@ cabal-version:       >=1.10
 
 library
   hs-source-dirs:      src
-  exposed-modules:     
+  exposed-modules:
     Animation.Pal
     Animation.Pal.Animation
     Animation.Pal.Timer
-  build-depends:       
+  build-depends:
       base
     , lens-extra
     , linear-extra
@@ -32,9 +32,9 @@ library
 
 test-suite animation-pal-explosion
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      app
+  hs-source-dirs:      test
   main-is:             MainExplosion.hs
-  other-modules: 
+  other-modules:
     Types
     Render
     Random
@@ -58,9 +58,9 @@ test-suite animation-pal-explosion
 
 test-suite animation-pal-chain
   type:                exitcode-stdio-1.0
-  hs-source-dirs:      app
+  hs-source-dirs:      test
   main-is:             MainChain.hs
-  other-modules: 
+  other-modules:
     Types
     Render
     Random
