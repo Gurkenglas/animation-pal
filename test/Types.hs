@@ -38,7 +38,6 @@ instance Animatable ShapeState where
 
 data Uniforms = Uniforms
   { uModelViewProjection :: UniformLocation (M44 GLfloat)
-  , uInverseModel        :: UniformLocation (M44 GLfloat)
   , uModel               :: UniformLocation (M44 GLfloat)
   , uCamera              :: UniformLocation (V3  GLfloat)
   , uDiffuse             :: UniformLocation (V4  GLfloat)

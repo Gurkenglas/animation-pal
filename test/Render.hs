@@ -36,9 +36,7 @@ drawShape' model projectionView shape = do
 
     let Uniforms{..} = sUniforms shape
 
-    uniformM44 uInverseModel        (inv44 model)
     uniformM44 uModel               model
-
     uniformM44 uModelViewProjection (projectionView !*! model)
 
     let vc = geoIndexCount (sGeometry shape)
