@@ -35,30 +35,32 @@ data Pattern = Pattern
 spawnCube :: (MonadState World m, MonadIO m) => m ()
 spawnCube = do
 
-  startTime <- utctDayTime <$> liftIO getCurrentTime
+    startTime <- utctDayTime <$> liftIO getCurrentTime
 
-  let hue = sin . realToFrac $ startTime
-      x = (* 10) . sin . (* 2) . realToFrac $ startTime
-      y = (* 10) . cos . (* 2) . realToFrac $ startTime
-  color <- randomColorWithHue hue
+    let hue = sin . realToFrac $ startTime
+        x = (* 10) . sin . (* 2) . realToFrac $ startTime
+        y = (* 10) . cos . (* 2) . realToFrac $ startTime
+    color <- randomColorWithHue hue
 
-  toShapeState <- ShapeState
-      <$> (randomPose <&> posPosition +~ V3 x y 0)
-      <*> randomColorWithHue hue
-      <*> pure 0
+    let fromShapeState = newShapeState
+                          & rndrColor .~ color
+                          & rndrPose . posOrientation .~ (axisAngle (V3 0 1 0) 0)
+                          & rndrPose . posPosition . _x .~ x
+                          & rndrPose . posPosition . _y .~ y
 
-  let shapeAnim = Animation
-        { animStart    = startTime
-        , animDuration = 1
-        , animFunc = shapeStateAnim
-        , animFrom = newShapeState
-                      & rndrColor .~ color
-                      & rndrPose . posOrientation .~ (axisAngle (V3 0 1 0) 0)
-                      & rndrPose . posPosition . _x .~ x
-                      & rndrPose . posPosition . _y .~ y
-        , animTo = toShapeState
-        }
-  wldAnimations <>= [shapeAnim]
+    toShapeState <- ShapeState
+        <$> (randomPose <&> posPosition +~ V3 x y 0)
+        <*> randomColorWithHue hue
+        <*> pure 0
+
+    let shapeAnim = Animation
+            { animStart    = startTime
+            , animDuration = 1
+            , animFunc = animator (undefined :: ShapeState)
+            , animFrom = fromShapeState
+            , animTo = toShapeState
+            }
+    wldAnimations <>= [shapeAnim]
 
 main :: IO ()
 main = do

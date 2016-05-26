@@ -7,7 +7,6 @@
 module Main where
 
 import Graphics.VR.Pal
-import Graphics.UI.GLFW.Pal
 import Graphics.GL.Pal
 import Control.Monad.State.Strict
 import Control.Lens.Extra
@@ -23,68 +22,73 @@ import Random
 
 spawnCube :: (MonadState World m, MonadIO m) => m ()
 spawnCube = do
-  
-  startTime <- utctDayTime <$> liftIO getCurrentTime
 
-  color <- randomColor
+    startTime <- utctDayTime <$> liftIO getCurrentTime
 
-  toShapeState <- randomShapeState
+    color <- randomColor
 
-  let shapeAnim = Animation
-        { animStart    = startTime
-        , animDuration = 1
-        , animFunc     = shapeStateAnim
-        , animFrom     = newShapeState 
-                            & rndrColor .~ color
-                            & rndrPose . posOrientation .~ (axisAngle (V3 0 1 0) 0)
-        , animTo       = toShapeState
-        }
-  wldAnimations <>= [shapeAnim]
+    toShapeState <- randomShapeState
+
+    let shapeAnim = Animation
+            { animStart    = startTime
+            , animDuration = 1
+            , animFunc     = shapeStateAnim
+            , animFrom     = newShapeState
+                                & rndrColor .~ color
+                                & rndrPose . posOrientation .~ (axisAngle (V3 0 1 0) 0)
+            , animTo       = toShapeState
+            }
+    wldAnimations <>= [shapeAnim]
 
 main :: IO ()
 main = do
-  vrPal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" []
+    vrPal@VRPal{..} <- reacquire 0 $ initVRPal "VRPal" []
 
-  -- Set up our cube resources
-  cubeProg <- createShaderProgram "app/cube.vert" "app/cube.frag"
-  cubeGeo  <- cubeGeometry (1 :: V3 GLfloat) (V3 1 1 1)
-  shape    <- makeShape cubeGeo cubeProg
+    -- Set up our cube resources
+    cubeProg <- createShaderProgram "test/cube.vert" "test/cube.frag"
+    cubeGeo  <- cubeGeometry (1 :: V3 GLfloat) (V3 1 1 1)
+    shape    <- makeShape cubeGeo cubeProg
 
-  glEnable GL_DEPTH_TEST
-  glClearColor 0 0 0.1 1
-  
-  useProgram (sProgram shape)
+    glEnable GL_DEPTH_TEST
+    glClearColor 0 0 0.1 1
 
-  
-  let world = World (newPose {_posPosition = V3 0 0 5}) []
+    useProgram (sProgram shape)
 
-  -- onSpawnTimer <- makeTimer 0.001
 
-  void . flip runStateT world . whileVR vrPal $ \headM44 hands -> do
-    -- applyMouseLook gpWindow wldPlayer
-    applyWASD gpWindow wldPlayer
-    processEvents gpEvents $ \e -> do
-      closeOnEscape gpWindow e
-      applyGamepadJoystickMovement e wldPlayer
-      onKeyDown e Key'E $ replicateM_ 100 spawnCube
-    
-    -- onSpawnTimer spawnCube
+    let world = World (newPose {_posPosition = V3 0 0 5}) []
 
-    now <- utctDayTime <$> liftIO getCurrentTime
+    --onSpawnTimer <- makeTimer 0.001
 
-    (shapeStates, runningAnims, finishedEvaledAnims) <- evalAnimations now <$> use wldAnimations
-    
-    -- Whenever an animation finishes, create a new animation to continue it    
-    newAnims <- forM finishedEvaledAnims $ \finishedAnim -> 
-      -- Animate from the final state of the last animation to the new state
-      continueAnimation finishedAnim <$> liftIO randomShapeState
+    void . flip runStateT world $ do
+        replicateM_ 100 spawnCube
+        whileWindow gpWindow $ do
+            -- applyMouseLook gpWindow wldPlayer
+            applyWASD gpWindow wldPlayer
+            player <- use wldPlayer
+            (headM44, events) <- tickVR vrPal (transformationFromPose player)
+            forM_ events $ \case
+                GLFWEvent e -> do
+                    closeOnEscape gpWindow e
+                    applyGamepadJoystickMovement e wldPlayer
+                    onKeyDown e Key'E $ replicateM_ 100 spawnCube
+                _ -> return ()
 
-    wldAnimations .= runningAnims ++ newAnims
-    
-    player <- use wldPlayer
-    renderWith vrPal player headM44 
-      (glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT))
-      (render shape shapeStates)
+            --onSpawnTimer spawnCube
+
+            now <- utctDayTime <$> liftIO getCurrentTime
+
+            (shapeStates, runningAnims, finishedEvaledAnims) <- evalAnimations now <$> use wldAnimations
+
+            -- Whenever an animation finishes, create a new animation to continue it
+            newAnims <- forM finishedEvaledAnims $ \finishedAnim ->
+                -- Animate from the final state of the last animation to the new state
+                continueAnimation finishedAnim <$> liftIO randomShapeState
+
+            wldAnimations .= runningAnims ++ newAnims
+
+            renderWith vrPal headM44 $ \projM44 viewM44 -> do
+                glClear (GL_COLOR_BUFFER_BIT .|. GL_DEPTH_BUFFER_BIT)
+                render shape shapeStates projM44 viewM44
 
 
 

@@ -19,10 +19,10 @@ makeLenses ''World
 makeLenses ''ShapeState
 
 newShapeState :: ShapeState
-newShapeState = ShapeState 
+newShapeState = ShapeState
   { _rndrPose = newPose
   , _rndrColor = 1
-  , _rndrScale = 1 
+  , _rndrScale = 1
   }
 
 shapeStateAnim :: AnimationFunc ShapeState
@@ -31,7 +31,8 @@ shapeStateAnim = anim (rndrPose . posPosition)
                . anim rndrScale
                . anim rndrColor
 
-
+instance Animatable ShapeState where
+    animator _a = shapeStateAnim
 
 
 

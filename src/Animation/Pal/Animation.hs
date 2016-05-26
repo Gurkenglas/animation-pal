@@ -14,8 +14,8 @@ import Control.Monad.Trans
 -- lerp for slerp in the case of Quaternions
 
 class Fractional a => Interpolatable a where
-  interp :: a -> a -> Double -> a
-  interp fromVal toVal p = fromVal + realToFrac p * (toVal - fromVal)
+    interp :: a -> a -> Double -> a
+    interp fromVal toVal p = fromVal + realToFrac p * (toVal - fromVal)
 
 instance Interpolatable Double
 instance Interpolatable Float
@@ -24,7 +24,7 @@ instance Fractional a => Interpolatable (V3 a)
 instance Fractional a => Interpolatable (V4 a)
 
 instance (RealFloat a) => Interpolatable (Quaternion a) where
-  interp fromVal toVal p = slerp fromVal toVal (realToFrac p)
+    interp fromVal toVal p = slerp fromVal toVal (realToFrac p)
 
 -- | Make your own type Animatable by using chained applications of the anim function
 -- to each field, e.g.:
@@ -44,41 +44,41 @@ class Animatable a where
   animator :: a -> AnimationFunc a
 
 instance Animatable Double where
-  animator _a = anim id
+    animator _a = anim id
 instance Animatable Float where
-  animator _a = anim id
+    animator _a = anim id
 instance (Fractional a) => Animatable (V2 a) where
-  animator _a = anim id
+    animator _a = anim id
 instance (Fractional a) => Animatable (V3 a) where
-  animator _a = anim id
+    animator _a = anim id
 instance (Fractional a) => Animatable (V4 a) where
-  animator _a = anim id
+    animator _a = anim id
 instance (RealFloat a) => Animatable (Quaternion a) where
-  animator _a = anim id
+    animator _a = anim id
 
 makeAnimation :: (MonadIO m, Animatable struct)
               => DiffTime
               -> struct -> struct -> m (Animation struct)
 makeAnimation duration fromA toB = do
-  now <- getNow
-  return Animation
-      { animFrom = fromA
-      , animTo   = toB
-      , animFunc = animator fromA
-      , animStart = now
-      , animDuration = duration
-      }
+    now <- getNow
+    return Animation
+        { animFrom = fromA
+        , animTo   = toB
+        , animFunc = animator fromA
+        , animStart = now
+        , animDuration = duration
+        }
 
 redirectAnimation :: (MonadIO m, Animatable struct) => Animation struct -> struct -> m (Animation struct)
 redirectAnimation orig toNew = do
-  now <- getNow
-  let evaled = evalAnim now orig
-  return orig
-    { animFrom = evanResult evaled
-    , animTo = toNew
-    , animStart = now
-    , animDuration = animDuration orig - (now - animStart orig)
-    }
+    now <- getNow
+    let evaled = evalAnim now orig
+    return orig
+        { animFrom = evanResult evaled
+        , animTo = toNew
+        , animStart = now
+        , animDuration = animDuration orig - (now - animStart orig)
+        }
 
 -- | A composable animation func taking a "progress" time and a starting struct,
 -- and returning the same progress time along with the modified struct
@@ -86,18 +86,18 @@ redirectAnimation orig toNew = do
 type AnimationFunc struct = (struct, struct, Double) -> (struct, struct, Double)
 
 data Animation struct = Animation
-  { animStart    :: !DiffTime
-  , animDuration :: !DiffTime
-  , animFunc     :: !(AnimationFunc struct)
-  , animFrom     :: !struct
-  , animTo       :: !struct
-  }
+    { animStart    :: !DiffTime
+    , animDuration :: !DiffTime
+    , animFunc     :: !(AnimationFunc struct)
+    , animFrom     :: !struct
+    , animTo       :: !struct
+    }
 
 data EvaluatedAnimation struct = EvaluatedAnimation
-  { evanResult    :: !struct
-  , evanRunning   :: !Bool
-  , evanAnimation :: !(Animation struct)
-  }
+    { evanResult    :: !struct
+    , evanRunning   :: !Bool
+    , evanAnimation :: !(Animation struct)
+    }
 
 -- | Constructs an animation from a lens.
 -- The animation will take a fromState, a toState and a progress value (0-1)
@@ -146,23 +146,23 @@ evalAnim now animation@Animation{..} = evaluated
     progress  = realToFrac ((now - animStart) / animDuration)
     eased     = cubicInOut . min 1 $ progress
     evaluated = EvaluatedAnimation
-      { evanResult    = view _1 $ animFunc (animFrom, animTo, eased)
-      , evanRunning   = progress < 1
-      , evanAnimation = animation
-      }
+        { evanResult    = view _1 $ animFunc (animFrom, animTo, eased)
+        , evanRunning   = progress < 1
+        , evanAnimation = animation
+        }
 
 
 
 continueAnimation :: EvaluatedAnimation struct -> struct -> (Animation struct)
 continueAnimation evaledAnim toStruct =
-  Animation
-    { animStart    = animStart fromAnim + animDuration fromAnim
-    , animDuration = 1
-    , animFunc = animFunc fromAnim
-    , animFrom = evanResult evaledAnim
-    , animTo = toStruct
-    }
-  where fromAnim = evanAnimation evaledAnim
+    Animation
+        { animStart    = animStart fromAnim + animDuration fromAnim
+        , animDuration = 1
+        , animFunc = animFunc fromAnim
+        , animFrom = evanResult evaledAnim
+        , animTo = toStruct
+        }
+    where fromAnim = evanAnimation evaledAnim
 
 getNow :: MonadIO m => m DiffTime
 getNow = utctDayTime <$> liftIO getCurrentTime
@@ -174,14 +174,14 @@ getNow = utctDayTime <$> liftIO getCurrentTime
 -- | More at https://github.com/warrenm/AHEasing/blob/master/AHEasing/easing.c
 quadraticInOut :: (Fractional a, Ord a) => a -> a
 quadraticInOut t
-  | t < 0.5   = 2 * t ^: 2
-  | otherwise = (-2 * t ^: 2) + (4 * t) - 1
+    | t < 0.5   = 2 * t ^: 2
+    | otherwise = (-2 * t ^: 2) + (4 * t) - 1
 
 cubicInOut :: (Fractional a, Ord a) => a -> a
 cubicInOut t
-  | t < 0.5   = 4 * t ^: 3
-  | otherwise = 0.5 * f ^: 3 + 1
-                where f = ((2 * t) - 2)
+    | t < 0.5   = 4 * t ^: 3
+    | otherwise = 0.5 * f ^: 3 + 1
+                  where f = ((2 * t) - 2)
 
 -- | Hack to default second arg of ^ to Int avoid ambiguous type warnings
 (^:) :: Num a => a -> Int -> a
