@@ -155,7 +155,7 @@ evalAnim now animation@Animation{..} = evaluated
     eased     = cubicInOut . min 1 $ progress
     evaluated = EvaluatedAnimation
         { evanResult    = view _1 $ animFunc (animFrom, animTo, eased)
-        , evanRunning   = progress < 1
+        , evanRunning   = progress < 1 && animDuration > 0
         , evanAnimation = animation
         }
 
