@@ -80,6 +80,14 @@ redirectAnimation orig toNew = do
         , animDuration = animDuration orig - (now - animStart orig)
         }
 
+-- A second simple take that simply overwrites the "to" field.
+-- This will cause a glitch in the animation.
+redirectAnimation2 :: (Animatable struct) => Animation struct -> struct -> (Animation struct)
+redirectAnimation2 orig toNew = orig
+    { animTo = toNew
+    }
+
+
 -- | A composable animation func taking a "progress" time and a starting struct,
 -- and returning the same progress time along with the modified struct
 -- to be passed to the next animation func.
